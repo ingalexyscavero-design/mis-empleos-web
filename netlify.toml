@@ -1,0 +1,10 @@
+# Configuración de Netlify para la web de empleos.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Que cualquier ruta cargue la app (SPA).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

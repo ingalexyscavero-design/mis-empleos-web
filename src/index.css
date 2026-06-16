@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: #faf9ff;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: contain;
+}
+
+/* Degradados de marca reutilizables */
+.grad-marca { background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); }
+.grad-a { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
+.grad-b { background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); }
+.grad-c { background: linear-gradient(135deg, #f59e0b 0%, #f43f5e 100%); }
+.grad-header { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 45%, #db2777 100%); }
+
+.texto-grad {
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Sombra de color (glow suave) */
+.glow-marca { box-shadow: 0 10px 30px -8px rgba(124, 58, 237, .45); }
+.glow-verde { box-shadow: 0 10px 26px -8px rgba(16, 185, 129, .5); }
+
+/* Skeleton shimmer para carga */
+.skeleton {
+  background: linear-gradient(90deg, #ececf6 25%, #f6f5fc 37%, #ececf6 63%);
+  background-size: 800px 100%;
+}
+
+.sin-scroll::-webkit-scrollbar { display: none; }
+
+/* Que los degradados de texto no se corten en algunos móviles */
+@supports not (background-clip: text) {
+  .texto-grad { color: #7c3aed; -webkit-text-fill-color: currentColor; }
+}
