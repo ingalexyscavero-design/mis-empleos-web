@@ -1,16 +1,17 @@
 {
-  "name": "Mis Empleos",
-  "short_name": "Empleos",
+  "name": "Empleos AC",
+  "short_name": "Empleos AC",
   "description": "Mis vacantes de trabajo para postular",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f4f5fb",
-  "theme_color": "#4f46e5",
+  "background_color": "#faf9ff",
+  "theme_color": "#7c3aed",
   "icons": [
     {
-      "src": "https://api.iconify.design/twemoji/briefcase.svg?width=192&height=192",
-      "sizes": "192x192",
-      "type": "image/svg+xml"
+      "src": "/icono.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }
