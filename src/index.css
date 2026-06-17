@@ -5,9 +5,12 @@
 * { -webkit-tap-highlight-color: transparent; }
 
 body {
-  background: #faf9ff;
+  background:
+    radial-gradient(1200px 500px at 50% -200px, rgba(124,58,237,.10), transparent 70%),
+    #f7f6fb;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: contain;
+  color: #1f2430;
 }
 
 /* Degradados de marca reutilizables */
@@ -38,4 +41,46 @@ body {
 /* Que los degradados de texto no se corten en algunos móviles */
 @supports not (background-clip: text) {
   .texto-grad { color: #7c3aed; -webkit-text-fill-color: currentColor; }
+}
+
+/* ===== Estética app: glass, tarjetas, sombras suaves ===== */
+.glass {
+  background: rgba(255, 255, 255, .72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+.tarjeta {
+  background: #fff;
+  border: 1px solid rgba(17, 24, 39, .05);
+  box-shadow: 0 1px 2px rgba(17, 24, 39, .04), 0 8px 28px -16px rgba(76, 29, 149, .22);
+}
+.sombra-marca { box-shadow: 0 12px 36px -14px rgba(109, 40, 217, .45); }
+
+/* Brillo que recorre los encabezados con degradado */
+.brillo-cabecera { position: relative; overflow: hidden; }
+.brillo-cabecera::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.22) 50%, transparent 70%);
+  transform: translateX(-120%) skewX(-18deg);
+  animation: brillo 4.5s ease-in-out infinite;
+}
+@keyframes brillo {
+  0% { transform: translateX(-120%) skewX(-18deg); }
+  60%,100% { transform: translateX(220%) skewX(-18deg); }
+}
+
+/* Efecto de presión más natural en elementos táctiles */
+.tap { transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
+.tap:active { transform: scale(.96); }
+
+/* Línea de grano sutil sobre degradados (textura premium) */
+.textura::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(255,255,255,.10) 1px, transparent 1px);
+  background-size: 18px 18px; opacity: .5;
+}
+
+/* Respeta a quien prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }

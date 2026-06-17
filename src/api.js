@@ -30,14 +30,29 @@ async function pedir(params) {
   return data;
 }
 
+// Invierte el orden de una lista (reciente → antiguo) como respaldo
+// inmediato en el cliente, por si la API aún devuelve antiguo → reciente.
+function masRecientesPrimero(data) {
+  if (data && Array.isArray(data.items)) {
+    // Si el back ya ordena por código, los más nuevos tienen código mayor.
+    data.items = [...data.items].sort((a, b) => {
+      const na = parseInt(String(a.codigo).replace(/\D/g, ""), 10) || 0;
+      const nb = parseInt(String(b.codigo).replace(/\D/g, ""), 10) || 0;
+      return nb - na;
+    });
+  }
+  return data;
+}
+
 // ===== Funciones que usa la app =====
 export const api = {
   stats: () => pedir({ accion: "stats" }),
   contadores: (cat) => pedir({ accion: "contadores", cat }),
+  // filtro: "pendientes" | "postuladas" | "descartadas" | "respondidos"
   vacantes: (cat, filtro, pagina, porPagina = 6) =>
-    pedir({ accion: "vacantes", cat, filtro, pagina, porPagina }),
+    pedir({ accion: "vacantes", cat, filtro, pagina, porPagina }).then(masRecientesPrimero),
   historial: (desde = 0, cuantas = 12) =>
-    pedir({ accion: "historial", desde, cuantas }),
+    pedir({ accion: "historial", desde, cuantas }).then(masRecientesPrimero),
   accion: (codigo, tipo) => pedir({ accion: "accion", codigo, tipo }),
   actualizar: () => pedir({ accion: "actualizar" }),
 };
