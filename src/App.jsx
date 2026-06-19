@@ -4,7 +4,7 @@ import {
   IHome, IBriefcase, ICheck, IChart, ICode, ITrend, IPuzzle,
   IBuilding, IPin, IMoney, IExternal, IClose, IRefresh, IInbox,
   IList, IChevron, IArrowLeft, IHome2, IRemote, IHybrid, IClock,
-  IHand, IGear,
+  IHand, IGear, IPencil,
 } from "./icons";
 
 // ---- Presentación de cada categoría (iconos SVG, sin emojis) ----
@@ -259,6 +259,7 @@ const FILTROS = [
 
 function DetalleCategoria({ cat, volver, toast }) {
   const [filtro, setFiltro] = useState("pendientes");
+  const [modalidad, setModalidad] = useState("todas");   // filtro por modalidad
   const [pagina, setPagina] = useState(1);
   const [data, setData] = useState(null);
   const [cont, setCont] = useState({ pendientes: 0, postuladas: 0, descartadas: 0, respondidos: 0 });
@@ -274,17 +275,30 @@ function DetalleCategoria({ cat, volver, toast }) {
 
   const cargar = useCallback(() => {
     setData(null);
-    api.vacantes(cat, filtro, pagina).then(setData).catch(() => setData({ items: [], total: 0, totalPaginas: 1 }));
-  }, [cat, filtro, pagina]);
+    api.vacantes(cat, filtro, pagina, 6, modalidad)
+      .then(setData).catch(() => setData({ items: [], total: 0, totalPaginas: 1 }));
+  }, [cat, filtro, pagina, modalidad]);
   useEffect(() => { cargar(); }, [cargar]);
   useEffect(() => { recargarCont(); }, [recargarCont]);
 
   const cambiarFiltro = (f) => { if (f !== filtro) { setFiltro(f); setPagina(1); } };
+  const cambiarModalidad = (m) => { if (m !== modalidad) { setModalidad(m); setPagina(1); } };
 
   const responder = async (codigo, tipo) => {
     setData((d) => ({ ...d, items: d.items.map((v) => v.codigo === codigo ? { ...v, _resuelto: tipo } : v) }));
     toast(tipo === "postular" ? "Guardada en tu hoja" : "Descartada", tipo === "postular" ? "ok" : "ko");
     try { await api.accion(codigo, tipo); } catch {}
+    recargarCont();
+  };
+
+  // Corregir un clic equivocado: mover una vacante respondida a otro estado.
+  const mover = async (codigo, estado) => {
+    // Quitarla al instante de la lista actual (ya no pertenece a este filtro).
+    setData((d) => ({ ...d, items: d.items.filter((v) => v.codigo !== codigo), total: d.total - 1 }));
+    const txt = estado === "Postulado" ? "Movida a Postuladas"
+      : estado === "Descartada" ? "Movida a Rechazadas" : "Devuelta a Pendientes";
+    toast(txt, estado === "Descartada" ? "ko" : "ok");
+    try { await api.mover(codigo, estado); } catch {}
     recargarCont();
   };
 
@@ -313,24 +327,29 @@ function DetalleCategoria({ cat, volver, toast }) {
 
       <div className="px-4 -mt-8 relative z-10">
         {/* Sub-pestañas (3 filtros) */}
-        <div className="flex gap-1 tarjeta rounded-2xl p-1.5 mb-5">
+        <div className="flex gap-1 tarjeta rounded-2xl p-1.5 mb-3.5">
           {FILTROS.map((f) => (
             <SubTab key={f.id} activa={filtro === f.id} onClick={() => cambiarFiltro(f.id)} texto={f.tx} cnt={cnt(f.id)} />
           ))}
         </div>
 
+        {/* Filtro por modalidad (chips deslizables) */}
+        <FiltroModalidad valor={modalidad} cambiar={cambiarModalidad} />
+
         {!data ? <SkeletonLista /> : data.total === 0 ? (
           <Vacio Icono={filtro === "pendientes" ? IInbox : IList} texto={
-            filtro === "pendientes" ? "No hay vacantes pendientes aquí. Pulsa “Buscar nuevas” en Inicio."
-            : filtro === "postuladas" ? "Aún no has postulado a vacantes de esta categoría."
-            : "No has rechazado vacantes de esta categoría."} />
+            modalidad !== "todas"
+              ? "Ninguna vacante con esa modalidad aquí. Prueba con “Todas”."
+              : filtro === "pendientes" ? "No hay vacantes pendientes aquí. Pulsa “Buscar nuevas” en Inicio."
+              : filtro === "postuladas" ? "Aún no has postulado a vacantes de esta categoría."
+              : "No has rechazado vacantes de esta categoría."} />
         ) : (
           <>
             {data.items.map((v, i) => (
               <div key={v.codigo} style={{ animationDelay: `${i * 55}ms` }} className="animate-subir">
                 {filtro === "pendientes"
                   ? <TarjetaVacante v={v} responder={responder} />
-                  : <FilaRespondida v={v} forzar={filtro === "postuladas" ? "Postulado" : "Descartado"} />}
+                  : <FilaRespondida v={v} forzar={filtro === "postuladas" ? "Postulado" : "Descartado"} mover={mover} />}
               </div>
             ))}
             <Paginador actual={data.pagina} total={data.totalPaginas} ir={setPagina} />
@@ -350,6 +369,33 @@ function SubTab({ activa, onClick, texto, cnt }) {
       <span className={`text-[11px] font-extrabold rounded-full px-1.5 min-w-[20px] transition-colors
         ${activa ? "bg-white/25 text-white" : "bg-gray-100 text-gray-400"}`}>{cnt}</span>
     </button>
+  );
+}
+
+// Chips para filtrar por modalidad dentro de una categoría.
+const MODALIDADES = [
+  { id: "todas", tx: "Todas", Ic: null },
+  { id: "remoto", tx: "Remoto", Ic: IRemote },
+  { id: "presencial", tx: "Presencial", Ic: IHome2 },
+  { id: "hibrido", tx: "Híbrido", Ic: IHybrid },
+  { id: "sin", tx: "No indicada", Ic: IClock },
+];
+
+function FiltroModalidad({ valor, cambiar }) {
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-2 mb-3 -mx-1 px-1 no-scrollbar">
+      {MODALIDADES.map((m) => {
+        const on = valor === m.id;
+        return (
+          <button key={m.id} onClick={() => cambiar(m.id)}
+            className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[12.5px] font-bold tap transition-all duration-200
+              ${on ? "grad-marca text-white sombra-marca" : "tarjeta text-gray-500"}`}>
+            {m.Ic && <m.Ic className="w-3.5 h-3.5" />}
+            {m.tx}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -404,24 +450,73 @@ function Meta({ Icono, txt }) {
   );
 }
 
-function FilaRespondida({ v, forzar }) {
+function FilaRespondida({ v, forzar, mover }) {
   const estado = forzar || v.estado;
   const post = estado === "Postulado";
+  const [menu, setMenu] = useState(false);   // menú de corrección abierto
+
+  // Opciones a las que se puede mover (las distintas del estado actual).
+  const opciones = [
+    { estado: "Postulado", tx: "Postulada", Ic: ICheck, cls: "text-emerald-600" },
+    { estado: "Descartada", tx: "Rechazada", Ic: IClose, cls: "text-rose-500" },
+    { estado: "Listo", tx: "Pendiente", Ic: IInbox, cls: "text-marca" },
+  ].filter((o) => o.estado !== (post ? "Postulado" : "Descartada"));
+
   return (
-    <div className="tarjeta rounded-[20px] px-4 py-3.5 mb-2.5 flex items-center gap-3 tap">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white
-        ${post ? "grad-b" : "bg-gradient-to-br from-rose-400 to-rose-500"}`}>
-        {post ? <ICheck className="w-5 h-5" /> : <IClose className="w-5 h-5" />}
+    <div className="mb-2.5">
+      <div className="tarjeta rounded-[20px] px-4 py-3.5 flex items-center gap-3">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white
+          ${post ? "grad-b" : "bg-gradient-to-br from-rose-400 to-rose-500"}`}>
+          {post ? <ICheck className="w-5 h-5" /> : <IClose className="w-5 h-5" />}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-bold truncate">{v.titulo}</div>
+          <div className="text-xs text-gray-400 truncate flex items-center gap-1.5">
+            <span className="truncate">{v.empresa}</span>
+            <ModalidadMini m={v.modalidad} />
+          </div>
+        </div>
+        {/* Corregir (lápiz): solo cuando se puede mover (no en Historial) */}
+        {mover && (
+          <button onClick={() => setMenu((x) => !x)}
+            className={`w-9 h-9 inline-flex items-center justify-center rounded-xl tap shrink-0 transition-colors
+              ${menu ? "grad-marca text-white" : "bg-gray-100 text-gray-500"}`}>
+            <IPencil className="w-4 h-4" />
+          </button>
+        )}
+        <a href={v.enlace} target="_blank" rel="noreferrer"
+          className="w-9 h-9 inline-flex items-center justify-center rounded-xl bg-gray-100 text-gray-500 tap shrink-0">
+          <IExternal className="w-4 h-4" />
+        </a>
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-bold truncate">{v.titulo}</div>
-        <div className="text-xs text-gray-400 truncate">{v.empresa} · {post ? "Postulado" : "Rechazado"}</div>
-      </div>
-      <a href={v.enlace} target="_blank" rel="noreferrer"
-        className="w-9 h-9 inline-flex items-center justify-center rounded-xl bg-gray-100 text-gray-500 tap shrink-0">
-        <IExternal className="w-4 h-4" />
-      </a>
+
+      {/* Panel de corrección: mover a otro estado */}
+      {menu && mover && (
+        <div className="tarjeta rounded-[18px] mt-1.5 p-2 flex gap-2 animate-pop">
+          {opciones.map((o) => (
+            <button key={o.estado}
+              onClick={() => { setMenu(false); mover(v.codigo, o.estado); }}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gray-50 text-[12.5px] font-bold tap active:scale-95">
+              <o.Ic className={`w-4 h-4 ${o.cls}`} /> {o.tx}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
+  );
+}
+
+// Modalidad compacta (puntito de color + texto) para las filas respondidas.
+function ModalidadMini({ m }) {
+  const t = (m || "").toLowerCase();
+  let txt = "Sin modalidad", color = "bg-gray-300";
+  if (t.includes("remoto")) { txt = "Remoto"; color = "bg-emerald-500"; }
+  else if (t.includes("hibrid") || t.includes("híbrid")) { txt = "Híbrido"; color = "bg-violet-500"; }
+  else if (t.includes("presencial")) { txt = "Presencial"; color = "bg-blue-500"; }
+  return (
+    <span className="inline-flex items-center gap-1 shrink-0">
+      <span className={`w-1.5 h-1.5 rounded-full ${color}`} />{txt}
+    </span>
   );
 }
 

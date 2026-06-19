@@ -4,6 +4,10 @@
 
 * { -webkit-tap-highlight-color: transparent; }
 
+/* Oculta la barra de scroll (para los chips de modalidad deslizables) */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
 body {
   background:
     radial-gradient(1200px 500px at 50% -200px, rgba(124,58,237,.10), transparent 70%),

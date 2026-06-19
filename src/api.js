@@ -49,11 +49,14 @@ export const api = {
   stats: () => pedir({ accion: "stats" }),
   contadores: (cat) => pedir({ accion: "contadores", cat }),
   // filtro: "pendientes" | "postuladas" | "descartadas" | "respondidos"
-  vacantes: (cat, filtro, pagina, porPagina = 6) =>
-    pedir({ accion: "vacantes", cat, filtro, pagina, porPagina }).then(masRecientesPrimero),
+  // modalidad: "todas" | "remoto" | "presencial" | "hibrido" | "sin"
+  vacantes: (cat, filtro, pagina, porPagina = 6, modalidad = "todas") =>
+    pedir({ accion: "vacantes", cat, filtro, pagina, porPagina, modalidad }).then(masRecientesPrimero),
   historial: (desde = 0, cuantas = 12) =>
     pedir({ accion: "historial", desde, cuantas }).then(masRecientesPrimero),
   accion: (codigo, tipo) => pedir({ accion: "accion", codigo, tipo }),
+  // Corregir un clic: estado = "Listo" | "Postulado" | "Descartada"
+  mover: (codigo, estado) => pedir({ accion: "mover", codigo, estado }),
   actualizar: () => pedir({ accion: "actualizar" }),
 };
 
