@@ -2,89 +2,251 @@
 @tailwind components;
 @tailwind utilities;
 
-* { -webkit-tap-highlight-color: transparent; }
+/* ============================================================
+   TEMA OSCURO PREMIUM (tipo fintech / SaaS moderno)
+   Fondo casi negro · acento verde esmeralda · tipografía con
+   contraste. Sin degradados arcoíris ni brillos animados.
+   ============================================================ */
 
-/* Oculta la barra de scroll (para los chips de modalidad deslizables) */
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
+:root {
+  --bg:        #0f1b2e;   /* azul marino profundo (base) */
+  --bg-grad-1: #16263f;   /* azul para el degradado superior */
+  --bg-grad-2: #0c1626;   /* azul más hondo (parte baja) */
+  --bg-2:      #16243c;   /* superficies / tarjetas (vidrio) */
+  --bg-3:      #1e304d;   /* superficies secundarias */
+  --linea:     rgba(159,188,232,.12);   /* bordes fríos sutiles */
+  --linea-2:   rgba(159,188,232,.22);
+  --txt:       #eef3fb;   /* texto principal */
+  --txt-2:     #97a6c4;   /* texto secundario */
+  --txt-3:     #5f6f8f;   /* texto tenue */
+  --acento:    #e8c789;   /* dorado champagne (refinado, no chillón) */
+  --acento-2:  #d4ad63;   /* dorado más profundo */
+  --rojo:      #f2788a;   /* descartar / rechazada */
+  --verde:     #5fd6a8;   /* postulada / éxito */
+  --azul:      #7cb8ff;   /* categoría B */
+  --violeta:   #b6a4f0;   /* categoría C / híbrido */
+}
+
+* { -webkit-tap-highlight-color: transparent; }
+html { color-scheme: dark; }
 
 body {
+  /* Profundidad: un halo dorado tenue arriba, sombra honda abajo. Sutil. */
   background:
-    radial-gradient(1200px 500px at 50% -200px, rgba(124,58,237,.10), transparent 70%),
-    #f7f6fb;
+    radial-gradient(680px 380px at 78% -160px, rgba(232,199,137,.10), transparent 62%),
+    linear-gradient(180deg, var(--bg-grad-1) 0%, var(--bg) 40%, var(--bg-grad-2) 100%);
+  background-attachment: fixed;
+  color: var(--txt);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.011em;
   overscroll-behavior-y: contain;
-  color: #1f2430;
 }
 
-/* Degradados de marca reutilizables */
-.grad-marca { background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); }
-.grad-a { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); }
-.grad-b { background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); }
-.grad-c { background: linear-gradient(135deg, #f59e0b 0%, #f43f5e 100%); }
-.grad-header { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 45%, #db2777 100%); }
+/* Oculta scrollbars (chips de modalidad deslizables) */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.sin-scroll::-webkit-scrollbar { display: none; }
 
-.texto-grad {
-  background: linear-gradient(135deg, #7c3aed, #db2777);
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* ===== Acento (dorado) ===== */
+.text-marca   { color: var(--acento); }
+.bg-acento    { background: var(--acento); }
+.texto-grad   { color: var(--acento); }
+
+/* Botón principal: dorado champagne con brillo superior, texto marino */
+.btn-acento {
+  background: linear-gradient(180deg, #f0d6a3 0%, var(--acento) 48%, var(--acento-2) 100%);
+  color: #20180a;
+  font-weight: 700;
+  box-shadow: 0 8px 22px -8px rgba(232,199,137,.45),
+              inset 0 1px 0 rgba(255,255,255,.4);
+}
+.btn-acento:active { filter: brightness(.96); }
+
+/* ===== Superficies / tarjetas (vidrio sutil sobre el marino) ===== */
+.tarjeta {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.012));
+  background-color: var(--bg-2);
+  border: 1px solid var(--linea);
+  border-radius: 20px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.05) inset,
+              0 20px 44px -30px rgba(0,0,0,.85);
+}
+.tarjeta-2 {
+  background: var(--bg-3);
+  border: 1px solid var(--linea);
 }
 
-/* Sombra de color (glow suave) */
-.glow-marca { box-shadow: 0 10px 30px -8px rgba(124, 58, 237, .45); }
-.glow-verde { box-shadow: 0 10px 26px -8px rgba(16, 185, 129, .5); }
+/* Barra inferior translúcida */
+.glass {
+  background: rgba(33,50,86,.80);
+  backdrop-filter: saturate(150%) blur(18px);
+  -webkit-backdrop-filter: saturate(150%) blur(18px);
+}
 
-/* Skeleton shimmer para carga */
+/* Encabezados: transparente para fundirse con el fondo (sin "caja" dura) */
+.grad-header,
+.cabecera {
+  background:
+    radial-gradient(120% 150% at 85% -60%, rgba(232,199,137,.10), transparent 55%);
+}
+
+/* Cuadros de ícono por categoría: vidrio + anillo de color tenue */
+.grad-marca { background: var(--acento); color: #20180a; }
+.grad-a {
+  color: var(--acento);
+  background: rgba(232,199,137,.10);
+  box-shadow: inset 0 0 0 1px rgba(232,199,137,.32);
+}
+.grad-b {
+  color: var(--azul);
+  background: rgba(124,184,255,.10);
+  box-shadow: inset 0 0 0 1px rgba(124,184,255,.32);
+}
+.grad-c {
+  color: var(--violeta);
+  background: rgba(182,164,240,.10);
+  box-shadow: inset 0 0 0 1px rgba(182,164,240,.32);
+}
+
+/* Chips de categoría (etiqueta A/B/C en la tarjeta de vacante) */
+.cat-a { color: var(--acento);  background: rgba(232,199,137,.13); }
+.cat-b { color: var(--azul);    background: rgba(124,184,255,.13); }
+.cat-c { color: var(--violeta); background: rgba(182,164,240,.13); }
+
+/* Sombras de acento discretas */
+.sombra-marca { box-shadow: 0 12px 30px -14px rgba(232,199,137,.4); }
+.glow-marca   { box-shadow: 0 10px 30px -12px rgba(232,199,137,.42); }
+.glow-verde   { box-shadow: 0 10px 26px -12px rgba(95,214,168,.4); }
+
+/* Anulamos los efectos del tema viejo (brillo barrido y textura de puntos) */
+.brillo-cabecera::after { display: none !important; }
+.textura::before { display: none !important; }
+
+/* Skeleton shimmer */
 .skeleton {
-  background: linear-gradient(90deg, #ececf6 25%, #f6f5fc 37%, #ececf6 63%);
+  background: linear-gradient(90deg, #34497a 25%, #3f5690aa 37%, #34497a 63%);
+  background-color: #34497a;
   background-size: 800px 100%;
 }
 
-.sin-scroll::-webkit-scrollbar { display: none; }
+/* Presión táctil natural */
+.tap { transition: transform .16s cubic-bezier(.34,1.4,.64,1), background .2s ease, border-color .2s ease; }
+.tap:active { transform: scale(.97); }
 
-/* Que los degradados de texto no se corten en algunos móviles */
-@supports not (background-clip: text) {
-  .texto-grad { color: #7c3aed; -webkit-text-fill-color: currentColor; }
+/* ===== SPLASH (bienvenida premium) ===== */
+.splash-wrap {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--bg); overflow: hidden;
+  transition: opacity .55s ease, transform .55s cubic-bezier(.5,0,.2,1);
+}
+/* Salida: la pantalla se acerca un poco y se funde */
+.splash-out { opacity: 0; transform: scale(1.08); }
+
+/* Fondo que respira (halo dorado + azul) */
+.splash-bg {
+  position: absolute; inset: -20%;
+  background:
+    radial-gradient(420px 420px at 50% 42%, rgba(232,199,137,.16), transparent 60%),
+    radial-gradient(500px 400px at 50% 100%, rgba(124,184,255,.10), transparent 60%);
+  animation: splashBg 2.6s ease-in-out infinite alternate;
+}
+@keyframes splashBg {
+  0% { transform: scale(.95); opacity: .8; }
+  100% { transform: scale(1.08); opacity: 1; }
 }
 
-/* ===== Estética app: glass, tarjetas, sombras suaves ===== */
-.glass {
-  background: rgba(255, 255, 255, .72);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
+/* Destellos radiales */
+.splash-rayos { position: absolute; width: 1px; height: 1px; }
+.splash-rayo {
+  position: absolute; left: 0; top: 0; transform-origin: 0 0;
+  width: 2px; height: 140px; margin-left: -1px;
+  background: linear-gradient(to top, transparent, rgba(232,199,137,.5), transparent);
+  opacity: 0; animation: splashRayo 1.4s ease-out both;
 }
-.tarjeta {
-  background: #fff;
-  border: 1px solid rgba(17, 24, 39, .05);
-  box-shadow: 0 1px 2px rgba(17, 24, 39, .04), 0 8px 28px -16px rgba(76, 29, 149, .22);
-}
-.sombra-marca { box-shadow: 0 12px 36px -14px rgba(109, 40, 217, .45); }
-
-/* Brillo que recorre los encabezados con degradado */
-.brillo-cabecera { position: relative; overflow: hidden; }
-.brillo-cabecera::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.22) 50%, transparent 70%);
-  transform: translateX(-120%) skewX(-18deg);
-  animation: brillo 4.5s ease-in-out infinite;
-}
-@keyframes brillo {
-  0% { transform: translateX(-120%) skewX(-18deg); }
-  60%,100% { transform: translateX(220%) skewX(-18deg); }
+@keyframes splashRayo {
+  0% { opacity: 0; height: 0; }
+  40% { opacity: .9; }
+  100% { opacity: 0; height: 230px; }
 }
 
-/* Efecto de presión más natural en elementos táctiles */
-.tap { transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease; }
-.tap:active { transform: scale(.96); }
-
-/* Línea de grano sutil sobre degradados (textura premium) */
-.textura::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background-image: radial-gradient(rgba(255,255,255,.10) 1px, transparent 1px);
-  background-size: 18px 18px; opacity: .5;
+/* Anillos que se expanden */
+.splash-ring {
+  position: absolute; width: 110px; height: 110px; border-radius: 34px;
+  border: 1.5px solid rgba(232,199,137,.55);
+  animation: splashRing 2s cubic-bezier(.2,.7,.3,1) infinite;
+}
+@keyframes splashRing {
+  0% { transform: scale(.9); opacity: .7; }
+  100% { transform: scale(2.8); opacity: 0; }
 }
 
-/* Respeta a quien prefiere menos movimiento */
+/* Zona del logo */
+.splash-logo-zona { position: relative; width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; }
+
+/* Anillo que se "dibuja" alrededor del logo (stroke animado) */
+.splash-traza {
+  position: absolute; inset: -8px; width: calc(100% + 16px); height: calc(100% + 16px);
+  fill: none; transform: rotate(-90deg);
+}
+.splash-traza circle {
+  stroke: var(--acento); stroke-width: 2.5; stroke-linecap: round;
+  stroke-dasharray: 295; stroke-dashoffset: 295;
+  filter: drop-shadow(0 0 5px rgba(232,199,137,.6));
+  animation: splashTraza 1.1s cubic-bezier(.6,0,.2,1) .25s both;
+}
+@keyframes splashTraza { to { stroke-dashoffset: 0; } }
+
+/* Logo: aparece con rebote */
+.splash-logo { animation: splashLogo 1s cubic-bezier(.2,1.35,.35,1) both; }
+@keyframes splashLogo {
+  0% { transform: scale(.2) rotate(-18deg); opacity: 0; }
+  55% { transform: scale(1.12) rotate(4deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.splash-caja {
+  position: relative; width: 92px; height: 92px; border-radius: 28px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+/* Barrido de luz que cruza el logo */
+.splash-shine {
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%);
+  transform: translateX(-130%) skewX(-18deg);
+  animation: splashShine 1s ease-in-out 1.2s both;
+}
+@keyframes splashShine {
+  0% { transform: translateX(-130%) skewX(-18deg); }
+  100% { transform: translateX(160%) skewX(-18deg); }
+}
+
+/* Nombre + tagline */
+.splash-nombre { margin-top: 30px; text-align: center; }
+.splash-letra { display: inline-block; white-space: pre; animation: splashLetra .5s cubic-bezier(.2,1.3,.4,1) both; }
+@keyframes splashLetra {
+  0% { opacity: 0; transform: translateY(14px) scale(.8); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.splash-tagline { animation: splashTexto .6s ease-out 1.7s both; }
+@keyframes splashTexto {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Sacudida para PIN incorrecto */
+.animate-sacudir { animation: sacudir .4s ease; }
+@keyframes sacudir {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-9px); }
+  40% { transform: translateX(9px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+/* Menos movimiento si el usuario lo prefiere */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }

@@ -7,7 +7,7 @@
 const base = {
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 2,
+  strokeWidth: 2.4,            // trazo más grueso para que resalte en oscuro
   strokeLinecap: "round",
   strokeLinejoin: "round",
   viewBox: "0 0 24 24",
@@ -92,4 +92,16 @@ export const IGear = (p) => (
 );
 export const IPencil = (p) => (
   <Svg {...p}><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" /></Svg>
+);
+export const ILock = (p) => (
+  <Svg {...p}><rect x="4" y="11" width="16" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /><circle cx="12" cy="15.5" r="1.2" fill="currentColor" stroke="none" /></Svg>
+);
+export const IDelete = (p) => (
+  <Svg {...p}><path d="M20 5H9l-6 7 6 7h11a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z" /><path d="m17 9-5 5M12 9l5 5" /></Svg>
+);
+export const ILogout = (p) => (
+  <Svg {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /></Svg>
+);
+export const ISpark = (p) => (
+  <Svg {...p}><path d="M12 3v4M12 17v4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M3 12h4M17 12h4M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8" /></Svg>
 );

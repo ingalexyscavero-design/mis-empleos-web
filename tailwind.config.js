@@ -4,10 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        marca: { DEFAULT: "#6d28d9", osc: "#5b21b6", claro: "#f5f3ff" },
+        // Acento de marca: verde esmeralda (tema oscuro premium)
+        marca: { DEFAULT: "#10e0a0", osc: "#0bc48b", claro: "#04130d" },
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
       },
       keyframes: {
         aparecer: {
